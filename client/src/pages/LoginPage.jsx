@@ -1,12 +1,21 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { Navigate } from "react-router-dom";
+
+
 const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
+  const [redirect, setRedirect] = useState(false);
+  
   async function handleLoginSubmit(ev) {
     ev.preventDefault();
     await axios.post("http://localhost:3000/", { username, password });
+    setRedirect(true);
+  }
+
+  if (redirect) {
+    return <Navigate to={`/profile`} />;
   }
 
   return (
