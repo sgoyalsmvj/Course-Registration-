@@ -84,6 +84,9 @@ app.get('/profile/:id',async(req,res)=>{
         res.json(admin);
     }
 })
+app.get('/coursereg',async(req,res)=>{
+   res.json('hello')
+})
 app.listen(3000, () => {
   console.log("you are connected to localhost 3000!");
 });
