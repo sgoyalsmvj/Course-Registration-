@@ -6,19 +6,17 @@ const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [redirect, setRedirect] = useState(false);
-  const [id,setId] = useState(null);
 
    function handleLoginSubmit(ev) {
     ev.preventDefault();
     axios.post("http://localhost:3000/", { username, password }).then((res)=>{
       setRedirect(true);
-      setId(res?.data?._id)
     })
    
   }
 
   if (redirect) {
-    return <Navigate to={`/profile/${id}`} />;
+    return <Navigate to={'/profile'} />;
   }
 
   return (

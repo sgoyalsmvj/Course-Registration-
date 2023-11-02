@@ -6,6 +6,7 @@ const studentSchema = new mongoose.Schema({
     password:String,
     rollno:String,
     year:Number,
+    branch:String
 })
 
 const studentModel = mongoose.model("Student",studentSchema);

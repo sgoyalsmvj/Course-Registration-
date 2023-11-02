@@ -3,10 +3,12 @@ const bodyParser = require("body-parser");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const dotenv = require("dotenv").config();
 const mongoose = require("mongoose");
 const students = require("./models/student");
 const faculties = require("./models/faculty");
 const admins = require("./models/admin");
+const courses = require("./models/course");
 const jwtSecret = "asdfghjklqwertyuio";
 
 function passCheck(entity, password, res) {
@@ -69,24 +71,45 @@ app.post("/", async (req, res) => {
     res.json("not found");
   }
 });
+app.post('/logout',(req,res)=>{
+  res.cookie("token",' ').json(true);
+});
 
+app.get("/profile", async(req, res) => {
+  const { token } = req.cookies;
+  if (token) {
+    jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+      if (err) throw err;
+      console.log("matched");
+      let entity;
+      const student = await students.findById(userData.id);
+      const faculty = await faculties.findById(userData.id);
+      const admin = await admins.findById(userData.id);
+      if(student)entity = student;
+      else if(!student){
+        entity = faculty;
+      }
+      else if(!faculty){
+        entity = admin
+      }
+      res.json(entity);
+    });
+  } else {
+    res.json(null);
+  }
+});
 
-app.get('/profile/:id',async(req,res)=>{
-    const {id} = req.params;
-    const student = await students.findById(id);
-    const admin = await admins.findById(id);
-    const faculty = await faculties.findById(id);
-    if (student) {
-       res.json(student);
-    } else if (faculty) {
-        res.json(faculty);
-    } else {
-        res.json(admin);
-    }
-})
-app.get('/coursereg',async(req,res)=>{
-   res.json('hello')
-})
+// courses.insertMany([
+//   {name:'COA',branch:'CSE',elective:false,semester:3,faculty:['Pretty Singh','Polumi Dalapati']},
+//   {name:'IDBMS',branch:'CSE',elective:false,semester:3,faculty:['xyz']}
+// ])
+
+app.get("/coursereg", async (req, res) => {
+  const {token} = req.cookies;
+  console.log(token);
+  const result = await courses.find({branch:'CSE'});
+  res.json(result);
+});
 app.listen(3000, () => {
   console.log("you are connected to localhost 3000!");
 });
